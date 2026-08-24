@@ -46,8 +46,9 @@ func (a *App) AttachField(pairID int64, dims model.Dims, displacements []model.V
 	if err := a.st.CreateField(f); err != nil {
 		return nil, err
 	}
-	// 影像对进入待校验状态。
-	if pair.Status == model.PairPending {
+	// 首次追加形变场：影像对由登记推进到待校验状态。
+	// 封存影像对已在上方 CanAttachField 处拦截，此处不会触及终态。
+	if pair.Status == model.PairRegistered {
 		_ = a.st.SetImagePairStatus(pairID, model.PairPending)
 	}
 	return f, nil
