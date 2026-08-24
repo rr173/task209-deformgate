@@ -31,6 +31,15 @@ func TestValidateSamplePosition(t *testing.T) {
 	if err := ValidateSamplePosition(model.Vec3{X: 9, Y: 3, Z: 2}, dims); err == nil {
 		t.Fatal("越界采样点应拒绝")
 	}
+	if err := ValidateSamplePosition(model.Vec3{X: -1, Y: 3, Z: 2}, dims); err == nil {
+		t.Fatal("负 x 采样点应拒绝")
+	}
+	if err := ValidateSamplePosition(model.Vec3{X: 3, Y: -1, Z: 2}, dims); err == nil {
+		t.Fatal("负 y 采样点应拒绝")
+	}
+	if err := ValidateSamplePosition(model.Vec3{X: 3, Y: 3, Z: -1}, dims); err == nil {
+		t.Fatal("负 z 采样点应拒绝")
+	}
 }
 
 func TestBoundaryVoxel(t *testing.T) {

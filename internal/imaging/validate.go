@@ -29,7 +29,7 @@ func ValidateSamplePosition(pos model.Vec3, dims model.Dims) error {
 	}
 	if pos.X < 0 || pos.X >= float64(nx) ||
 		pos.Y < 0 || pos.Y >= float64(ny) ||
-		pos.Z >= float64(nz) {
+		pos.Z < 0 || pos.Z >= float64(nz) {
 		return fmt.Errorf("%w: 采样点 (%.2f, %.2f, %.2f) 越界，影像维度 %v", model.ErrInvalid, pos.X, pos.Y, pos.Z, dims)
 	}
 	return nil
