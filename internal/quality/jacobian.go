@@ -130,8 +130,8 @@ func gradX(disp []model.Vec3, dims model.Dims, ix, iy, iz, nx, ny, nz, c int) fl
 	if ix == nx-1 {
 		return cur - component(dispAt(disp, dims, ix-1, iy, iz, nx, ny), c)
 	}
-	return component(dispAt(disp, dims, ix+1, iy, iz, nx, ny), c) -
-		component(dispAt(disp, dims, ix-1, iy, iz, nx, ny), c)
+	return (component(dispAt(disp, dims, ix+1, iy, iz, nx, ny), c) -
+		component(dispAt(disp, dims, ix-1, iy, iz, nx, ny), c)) / 2
 }
 
 // gradY 计算位移向量第 c 分量对 y 的差分（边界自适应单边）。
