@@ -93,7 +93,8 @@ func (s *Store) ActivateParams(id int64) error {
 		if exists == 0 {
 			return model.ErrNotFound
 		}
-		if _, err := tx.Exec(`UPDATE check_params SET active = 0 WHERE id = ?`, id); err != nil {
+		// 任意时刻只能有一个激活版本：先把所有版本置为未激活，再激活目标。
+		if _, err := tx.Exec(`UPDATE check_params SET active = 0`); err != nil {
 			return err
 		}
 		_, err := tx.Exec(`UPDATE check_params SET active = 1, updated_at = ? WHERE id = ?`,
