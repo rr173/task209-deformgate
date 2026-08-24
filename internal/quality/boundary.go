@@ -14,7 +14,9 @@ func ComputeBoundaryStats(disp []model.Vec3, dims model.Dims) model.BoundaryStat
 			continue
 		}
 		st.Total++
-		if !isNaNVector(disp[i]) {
+		// 无穷位移（±Inf）与 NaN 同属无效数据：边界体素任一分量非有限值，
+		// 即视为缺边界（missing），避免把无穷覆盖计入有效统计导致判定过于乐观。
+		if disp[i].IsFinite() {
 			st.Covered++
 		} else {
 			st.Missing++
@@ -24,8 +26,4 @@ func ComputeBoundaryStats(disp []model.Vec3, dims model.Dims) model.BoundaryStat
 		st.CoverageRatio = float64(st.Covered) / float64(st.Total)
 	}
 	return st
-}
-
-func isNaNVector(v model.Vec3) bool {
-	return v.X != v.X || v.Y != v.Y || v.Z != v.Z
 }
