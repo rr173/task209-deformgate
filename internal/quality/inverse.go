@@ -5,6 +5,7 @@ import "task209-deformgate/internal/model"
 // ComputeInverseStats 汇总逆一致性误差统计：
 // 均值、最大值、超阈值采样点数与占比。
 // points 的 Error 字段应已由 field.ComputeSampleErrors 计算。
+// 误差恰好等于阈值视为合格边界，不计入超阈值样本：仅严格大于阈值才告警。
 func ComputeInverseStats(points []model.SamplePoint, threshold float64) model.InverseStats {
 	st := model.InverseStats{SampleCount: len(points)}
 	if len(points) == 0 {
@@ -17,7 +18,7 @@ func ComputeInverseStats(points []model.SamplePoint, threshold float64) model.In
 		if e > max {
 			max = e
 		}
-		if e >= threshold {
+		if e > threshold {
 			st.ExceedCount++
 		}
 	}

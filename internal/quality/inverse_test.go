@@ -30,6 +30,25 @@ func TestComputeInverseStats(t *testing.T) {
 	}
 }
 
+// TestComputeInverseStatsBoundary 锁定"恰好等于阈值视为合格边界"的语义：
+// 误差恰为阈值的采样点不得计入超阈值样本，否则会让超限比例与复核判定偏高。
+func TestComputeInverseStatsBoundary(t *testing.T) {
+	points := []model.SamplePoint{
+		{Error: 0.1},
+		{Error: 2.0}, // 恰好等于阈值：合格边界，不应计入
+		{Error: 2.0}, // 同上
+		{Error: 2.1}, // 真正超过阈值：应计入
+	}
+	st := ComputeInverseStats(points, 2.0)
+	if st.ExceedCount != 1 {
+		t.Fatalf("ExceedCount=%d 期望 1（等于阈值不计入）", st.ExceedCount)
+	}
+	wantRatio := 1.0 / 4.0
+	if st.ExceedRatio < wantRatio-1e-9 || st.ExceedRatio > wantRatio+1e-9 {
+		t.Fatalf("ExceedRatio=%v 期望 %v", st.ExceedRatio, wantRatio)
+	}
+}
+
 func TestDecide(t *testing.T) {
 	p := model.DefaultCheckParams("t")
 	cases := []struct {
