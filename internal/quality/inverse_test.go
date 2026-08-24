@@ -41,6 +41,8 @@ func TestDecide(t *testing.T) {
 	}{
 		{"fold_reject", model.JacobianStats{FoldCount: 1}, model.InverseStats{}, model.BoundaryStats{CoverageRatio: 1}, model.VerdictReject},
 		{"missing_boundary_reject", model.JacobianStats{}, model.InverseStats{}, model.BoundaryStats{Total: 10, Covered: 5, CoverageRatio: 0.5}, model.VerdictReject},
+		// 覆盖率刚好等于阈值应视为满足覆盖要求，不得进入拒绝分支。
+		{"coverage_at_threshold_pass", model.JacobianStats{}, model.InverseStats{}, model.BoundaryStats{Total: 100, Covered: 95, CoverageRatio: 0.95}, model.VerdictPass},
 		{"ice_review", model.JacobianStats{}, model.InverseStats{Max: 5.0}, model.BoundaryStats{CoverageRatio: 1}, model.VerdictReview},
 		{"pass", model.JacobianStats{}, model.InverseStats{}, model.BoundaryStats{CoverageRatio: 1}, model.VerdictPass},
 	}

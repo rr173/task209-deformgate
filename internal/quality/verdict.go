@@ -10,7 +10,8 @@ func Decide(jac model.JacobianStats, inv model.InverseStats, bnd model.BoundaryS
 		return model.VerdictReject
 	}
 	// 严重缺边界：边界体素覆盖不足，直接拒绝。
-	if bnd.Total > 0 && bnd.CoverageRatio <= p.CoverageThreshold {
+	// 达到阈值即视为满足覆盖要求，只有低于阈值才进入拒绝分支。
+	if bnd.Total > 0 && bnd.CoverageRatio < p.CoverageThreshold {
 		return model.VerdictReject
 	}
 	// 逆一致性超标：正逆变换不自洽，需复核。
