@@ -157,11 +157,14 @@ func (s *Store) PublishResult(id int64) error {
 		if status != model.ResultDraft {
 			return model.ErrConflict
 		}
-		// 找当前 pair 的 published 结果。
+		// 找当前 pair 的 published 结果（即被替代的旧版本）。
+		// 注意：必须排除正在发布的结果自身（它此刻仍是 draft，但即便未来
+		// 允许重复发布，也不应让 supersedes 指向自己）。
 		var prevID int64
 		err = tx.QueryRow(
-			`SELECT id FROM quality_results WHERE image_pair_id = ? AND status = ? LIMIT 1`,
-			pairID, model.ResultDraft,
+			`SELECT id FROM quality_results
+			 WHERE image_pair_id = ? AND status = ? AND id <> ? LIMIT 1`,
+			pairID, model.ResultPublished, id,
 		).Scan(&prevID)
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return err
